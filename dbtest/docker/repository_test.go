@@ -31,5 +31,11 @@ var _ = Describe("Repository", func() {
 			Ω(blog.Content).To(Equal("hello"))
 			Ω(blog.Tags).To(Equal([]string{"a", "b"}))
 		})
+
+		It("Not Found", func() {
+			_, err := repo.Load(999)
+
+			Ω(err).To(HaveOccurred())
+		})
 	})
 })
