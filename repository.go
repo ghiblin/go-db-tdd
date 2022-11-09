@@ -2,6 +2,7 @@ package godbtdd
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/lib/pq"
@@ -78,6 +79,26 @@ func (r *Repository) ListAll() ([]*Blog, error) {
 		})
 	}
 	return blogs, nil
+}
+
+func (r *Repository) List(offset, limit int) ([]*Blog, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (r *Repository) Save(blog *Blog) error {
+	return errors.New("not implemented")
+}
+
+func (r *Repository) Delete(id int64) error {
+	return errors.New("not implemented")
+}
+
+func (r *Repository) SearchByTitle(q string, offset, limit int) ([]*Blog, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (r *Repository) SearchByTag(tag string, offset, limit int) ([]*Blog, error) {
+	return nil, errors.New("not implemented")
 }
 
 func (r *Repository) Create(blog *Blog) (int64, error) {
