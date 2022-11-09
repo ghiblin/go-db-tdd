@@ -13,12 +13,17 @@ var _ = Describe("Repository", func() {
 		err := repo.Migrate()
 		Ω(err).To(Succeed())
 
-		sampleData := &godbtdd.Blog{
-			Title:   "post",
+		_, err = repo.Create(&godbtdd.Blog{
+			Title:   "post 1",
 			Content: "hello",
 			Tags:    []string{"a", "b"},
-		}
-		_, err = repo.Create(sampleData)
+		})
+		Ω(err).To(Succeed())
+		_, err = repo.Create(&godbtdd.Blog{
+			Title:   "post 2",
+			Content: "world",
+			Tags:    []string{"b", "c"},
+		})
 		Ω(err).To(Succeed())
 	})
 
@@ -27,7 +32,7 @@ var _ = Describe("Repository", func() {
 			blog, err := repo.Load(1)
 
 			Ω(err).To(Succeed())
-			Ω(blog.Title).To(Equal("post"))
+			Ω(blog.Title).To(Equal("post 1"))
 			Ω(blog.Content).To(Equal("hello"))
 			Ω(blog.Tags).To(Equal([]string{"a", "b"}))
 		})
@@ -37,5 +42,11 @@ var _ = Describe("Repository", func() {
 
 			Ω(err).To(HaveOccurred())
 		})
+	})
+
+	It("ListAll", func() {
+		blogs, err := repo.ListAll()
+		Ω(err).To(Succeed())
+		Ω(blogs).To(HaveLen(2))
 	})
 })

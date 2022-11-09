@@ -39,6 +39,47 @@ func (r *Repository) Load(id int64) (*Blog, error) {
 	}, nil
 }
 
+func (r *Repository) ListAll() ([]*Blog, error) {
+	query := `
+		SELECT id, title, content, tags, created_at
+		FROM blogs
+	`
+	stmt, err := r.Db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	blogs := make([]*Blog, 0)
+	var (
+		id         int64
+		title      string
+		content    string
+		tags       []string
+		created_at time.Time
+	)
+	for rows.Next() {
+		err = rows.Scan(&id, &title, &content, pq.Array(&tags), &created_at)
+		if err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, &Blog{
+			ID:        id,
+			Title:     title,
+			Content:   content,
+			Tags:      tags,
+			CreatedAt: created_at,
+		})
+	}
+	return blogs, nil
+}
+
 func (r *Repository) Create(blog *Blog) (int64, error) {
 	query := `
 		INSERT INTO blogs(title, content, tags)
