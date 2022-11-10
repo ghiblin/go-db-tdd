@@ -91,4 +91,12 @@ var _ = Describe("Repository", func() {
 			Expect(blog.Title).To(Equal("foo"))
 		})
 	})
+
+	It("Delete", func() {
+		err := repo.Delete(1)
+		Expect(err).To(Succeed())
+		_, err = repo.Load(1)
+		Expect(err).To(HaveOccurred())
+	})
+
 })

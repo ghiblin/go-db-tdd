@@ -125,7 +125,21 @@ func (r *Repository) Save(blog *Blog) error {
 }
 
 func (r *Repository) Delete(id int64) error {
-	return errors.New("not implemented")
+	query := `
+		DELETE FROM blogs
+		WHERE id = $1
+	`
+	stmt, err := r.Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return nil
+	}
+	return nil
 }
 
 func (r *Repository) SearchByTitle(q string, offset, limit int) ([]*Blog, error) {
