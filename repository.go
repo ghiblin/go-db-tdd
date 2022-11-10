@@ -145,7 +145,13 @@ func (r *Repository) Delete(id int64) error {
 }
 
 func (r *Repository) SearchByTitle(q string, offset, limit int) ([]*Blog, error) {
-	return nil, errors.New("not implemented")
+	query := `
+		SELECT id, title, content, tags, created_at
+		FROM blogs
+		WHERE LOWER(title) LIKE CONCAT('%', LOWER($1::text), '%')
+		LIMIT $3 OFFSET $2
+	`
+	return r.fetchBlogs(query, q, offset, limit)
 }
 
 func (r *Repository) SearchByTag(tag string, offset, limit int) ([]*Blog, error) {

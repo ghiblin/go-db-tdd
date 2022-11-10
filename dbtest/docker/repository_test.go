@@ -99,4 +99,15 @@ var _ = Describe("Repository", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
+	DescribeTable("SearchByTitle",
+		func(q string, found int) {
+			l, err := repo.SearchByTitle(q, 0, 10)
+			Expect(err).To(Succeed())
+			Expect(l).To(HaveLen(found))
+		},
+		Entry("found", "post 1", 1),
+		Entry("partial", "ost", 2),
+		Entry("ignore case", "POST", 2),
+		Entry("not found", "bar", 0),
+	)
 })
