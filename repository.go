@@ -95,7 +95,33 @@ func (r *Repository) List(offset, limit int) ([]*Blog, error) {
 }
 
 func (r *Repository) Save(blog *Blog) error {
-	return errors.New("not implemented")
+	// check if blog ID field is setted to its zero-value
+	if blog.ID == 0 {
+		// Create
+		_, err := r.Create(blog)
+		return err
+	}
+
+	query := `
+		UPDATE blogs
+		SET
+			title = $2,
+			content = $3,
+			tags = $4
+		WHERE id = $1
+	`
+	stmt, err := r.Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(blog.ID, blog.Title, blog.Content, pq.Array(blog.Tags))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *Repository) Delete(id int64) error {

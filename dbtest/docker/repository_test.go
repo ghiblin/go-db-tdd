@@ -65,4 +65,30 @@ var _ = Describe("Repository", func() {
 		Expect(err).To(Succeed())
 		Expect(l).To(HaveLen(10))
 	})
+
+	Context("Save", func() {
+		It("Create", func() {
+			blog := &godbtdd.Blog{
+				Title:   "post 3",
+				Content: "hello",
+				Tags:    []string{"a", "b"},
+			}
+			err := repo.Save(blog)
+			Expect(err).To(Succeed())
+			Expect(blog.ID).To(BeEquivalentTo(3))
+		})
+
+		It("Update", func() {
+			blog, err := repo.Load(1)
+			Expect(err).To(Succeed())
+
+			blog.Title = "foo"
+			err = repo.Save(blog)
+			Expect(err).To(Succeed())
+
+			blog, err = repo.Load(1)
+			Expect(err).To(Succeed())
+			Expect(blog.Title).To(Equal("foo"))
+		})
+	})
 })
