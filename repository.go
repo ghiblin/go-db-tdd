@@ -153,8 +153,7 @@ func (r *Repository) SearchByTitle(q string, offset, limit int) ([]*Blog, error)
 	return r.fetchBlogs(query, q, offset, limit)
 }
 
-func (r *Repository) SearchByTag(tag string, offset, limit int) ([]*Blog, error) {
-	tags := []string{tag}
+func (r *Repository) SearchByTags(tags []string, offset, limit int) ([]*Blog, error) {
 	query := `
 		SELECT id, title, content, tags, created_at
 		FROM blogs

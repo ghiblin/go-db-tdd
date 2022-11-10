@@ -111,13 +111,14 @@ var _ = Describe("Repository", func() {
 		Entry("not found", "bar", 0),
 	)
 
-	DescribeTable("SearchByTag",
-		func(q string, found int) {
-			l, err := repo.SearchByTag(q, 0, 10)
+	DescribeTable("SearchByTags",
+		func(tags []string, found int) {
+			l, err := repo.SearchByTags(tags, 0, 10)
 			Expect(err).To(Succeed())
 			Expect(l).To(HaveLen(found))
 		},
-		Entry("found", "tech", 1),
-		Entry("not found", "foo", 0),
+		Entry("found single", []string{"tech"}, 1),
+		Entry("found multiple", []string{"tech", "fin"}, 1),
+		Entry("not found", []string{"foo"}, 0),
 	)
 })
