@@ -40,18 +40,14 @@ func (r *Repository) Load(id int64) (*Blog, error) {
 	}, nil
 }
 
-func (r *Repository) ListAll() ([]*Blog, error) {
-	query := `
-		SELECT id, title, content, tags, created_at
-		FROM blogs
-	`
+func (r *Repository) fetchBlogs(query string, args ...any) ([]*Blog, error) {
 	stmt, err := r.Db.Prepare(query)
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.Query()
+	rows, err := stmt.Query(args...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +62,7 @@ func (r *Repository) ListAll() ([]*Blog, error) {
 		created_at time.Time
 	)
 	for rows.Next() {
-		err = rows.Scan(&id, &title, &content, pq.Array(&tags), &created_at)
+		err := rows.Scan(&id, &title, &content, pq.Array(&tags), &created_at)
 		if err != nil {
 			return nil, err
 		}
@@ -81,8 +77,21 @@ func (r *Repository) ListAll() ([]*Blog, error) {
 	return blogs, nil
 }
 
+func (r *Repository) ListAll() ([]*Blog, error) {
+	query := `
+		SELECT id, title, content, tags, created_at
+		FROM blogs
+	`
+	return r.fetchBlogs(query)
+}
+
 func (r *Repository) List(offset, limit int) ([]*Blog, error) {
-	return nil, errors.New("not implemented")
+	query := `
+		SELECT id, title, content, tags, created_at
+		FROM blogs
+		LIMIT $2 OFFSET $1
+	`
+	return r.fetchBlogs(query, offset, limit)
 }
 
 func (r *Repository) Save(blog *Blog) error {
