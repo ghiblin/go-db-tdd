@@ -98,7 +98,9 @@ func (r *Repository) Save(blog *Blog) error {
 	// check if blog ID field is setted to its zero-value
 	if blog.ID == 0 {
 		// Create
-		_, err := r.Create(blog)
+		id, err := r.Create(blog)
+		// Update just created blog ID
+		blog.ID = id
 		return err
 	}
 
