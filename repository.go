@@ -2,7 +2,6 @@ package godbtdd
 
 import (
 	"database/sql"
-	"errors"
 	"time"
 
 	"github.com/lib/pq"
@@ -155,7 +154,14 @@ func (r *Repository) SearchByTitle(q string, offset, limit int) ([]*Blog, error)
 }
 
 func (r *Repository) SearchByTag(tag string, offset, limit int) ([]*Blog, error) {
-	return nil, errors.New("not implemented")
+	tags := []string{tag}
+	query := `
+		SELECT id, title, content, tags, created_at
+		FROM blogs
+		WHERE $1 <@ tags
+		LIMIT $3 OFFSET $2
+	`
+	return r.fetchBlogs(query, pq.Array(tags), offset, limit)
 }
 
 func (r *Repository) Create(blog *Blog) (int64, error) {

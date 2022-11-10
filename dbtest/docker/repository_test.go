@@ -18,13 +18,13 @@ var _ = Describe("Repository", func() {
 		_, err = repo.Create(&godbtdd.Blog{
 			Title:   "post 1",
 			Content: "hello",
-			Tags:    []string{"a", "b"},
+			Tags:    []string{"tech", "fin"},
 		})
 		Expect(err).To(Succeed())
 		_, err = repo.Create(&godbtdd.Blog{
 			Title:   "post 2",
 			Content: "world",
-			Tags:    []string{"b", "c"},
+			Tags:    []string{"fin", "post"},
 		})
 		Expect(err).To(Succeed())
 	})
@@ -36,7 +36,7 @@ var _ = Describe("Repository", func() {
 			Expect(err).To(Succeed())
 			Expect(blog.Title).To(Equal("post 1"))
 			Expect(blog.Content).To(Equal("hello"))
-			Expect(blog.Tags).To(Equal([]string{"a", "b"}))
+			Expect(blog.Tags).To(Equal([]string{"tech", "fin"}))
 		})
 
 		It("Not Found", func() {
@@ -57,7 +57,7 @@ var _ = Describe("Repository", func() {
 			_, err := repo.Create(&godbtdd.Blog{
 				Title:   fmt.Sprintf("new post %v", i),
 				Content: fmt.Sprintf("post %v content", i),
-				Tags:    []string{"b", "c"},
+				Tags:    []string{"foo"},
 			})
 			Expect(err).To(Succeed())
 		}
@@ -71,7 +71,7 @@ var _ = Describe("Repository", func() {
 			blog := &godbtdd.Blog{
 				Title:   "post 3",
 				Content: "hello",
-				Tags:    []string{"a", "b"},
+				Tags:    []string{"foo"},
 			}
 			err := repo.Save(blog)
 			Expect(err).To(Succeed())
@@ -109,5 +109,15 @@ var _ = Describe("Repository", func() {
 		Entry("partial", "ost", 2),
 		Entry("ignore case", "POST", 2),
 		Entry("not found", "bar", 0),
+	)
+
+	DescribeTable("SearchByTag",
+		func(q string, found int) {
+			l, err := repo.SearchByTag(q, 0, 10)
+			Expect(err).To(Succeed())
+			Expect(l).To(HaveLen(found))
+		},
+		Entry("found", "tech", 1),
+		Entry("not found", "foo", 0),
 	)
 })
